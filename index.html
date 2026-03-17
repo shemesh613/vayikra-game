@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ויקרא כ"ג - לימוד + קרב מטוסים!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Secular+One&family=Rubik:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: linear-gradient(180deg, #0a0a1a 0%, #0d1b2a 50%, #1a1a3e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  /* ========== TOP BAR - ALWAYS VISIBLE ========== */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    padding: 12px 15px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .top-title {
+    font-family: 'Secular One', sans-serif;
+    color: #ffd700;
+    font-size: 1em;
+    margin-bottom: 8px;
+  }
+
+  .holiday-strip {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.6em;
+    flex-wrap: wrap;
+  }
+
+  .holiday-icon {
+    opacity: 0.25;
+    transition: all 0.5s;
+    filter: grayscale(100%);
+  }
+
+  .holiday-icon.active {
+    opacity: 1;
+    filter: grayscale(0%);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+  .score-line {
+    color: #a5d6a7;
+    font-size: 0.9em;
+    font-weight: 700;
+    margin-top: 6px;
+    font-family: 'Secular One', sans-serif;
+  }
+
+  /* ========== BATTLEFIELD - ALWAYS VISIBLE ========== */
+  .battlefield {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 15px;
+    max-width: 700px;
+    margin: 0 auto;
+    position: sticky;
+    top: 85px;
+    z-index: 90;
+    background: linear-gradient(180deg, #0a0a1a, #0d1b2aee, #0d1b2acc);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .plane-card {
+    flex: 1;
+    max-width: 220px;
+    border-radius: 20px;
+    padding: 18px 14px;
+    text-align: center;
+    border: 3px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s;
+  }
+
+  .plane-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    opacity: 0.15;
+    z-index: 0;
+    border-radius: 18px;
+  }
+
+  .plane-card > * { position: relative; z-index: 1; }
+
+  /* Israel */
+  #planeCard1::before {
+    background: linear-gradient(180deg, #fff 0%, #fff 18%, #0038b8 18%, #0038b8 35%, #fff 35%, #fff 65%, #0038b8 65%, #0038b8 82%, #fff 82%, #fff 100%);
+  }
+  #planeCard1 { border-color: #0038b8; background: rgba(0,56,184,0.1); }
+
+  /* Iran */
+  #planeCard2::before {
+    background: linear-gradient(180deg, #239f40 0%, #239f40 33%, #fff 33%, #fff 66%, #da0000 66%, #da0000 100%);
+  }
+  #planeCard2 { border-color: #da0000; background: rgba(218,0,0,0.1); }
+
+  .plane-flag { font-size: 0.8em; color: #b0bec5; font-weight: 700; margin-bottom: 4px; }
+
+  .plane-emoji {
+    font-size: 3.5em;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .plane-name {
+    font-family: 'Secular One', sans-serif;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+  }
+
+  /* HP Bar */
+  .hp-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    margin-bottom: 3px;
+    color: #90a4ae;
+  }
+
+  .hp-num { font-weight: 700; font-size: 1.05em; }
+
+  .hp-bar {
+    width: 100%;
+    height: 14px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hp-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.8s ease;
+    position: relative;
+  }
+
+  .hp-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.25), transparent);
+    border-radius: 8px 8px 0 0;
+  }
+
+  .hp-fill.low { background: #ff5252 !important; animation: lowPulse 1s ease-in-out infinite; }
+
+  @keyframes lowPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .power-badge {
+    margin-top: 6px;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: #ffd700;
+  }
+
+  /* VS */
+  .vs-area {
+    font-family: 'Secular One', sans-serif;
+    font-size: 1.8em;
+    color: #ff6b35;
+    text-shadow: 0 0 20px rgba(255,107,53,0.4);
+    min-width: 50px;
+    text-align: center;
+  }
+
+  /* Shield badge */
+  .shield-active {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(79,195,247,0.25);
+    border: 2px solid #4fc3f7;
+    border-radius: 10px;
+    padding: 3px 8px;
+    font-size: 0.7em;
+    font-weight: 700;
+    color: #4fc3f7;
+    z-index: 5;
+    animation: shieldGlow 1.2s ease-in-out infinite;
+  }
+
+  @keyframes shieldGlow {
+    0%, 100% { box-shadow: 0 0 5px rgba(79,195,247,0.3); }
+    50% { box-shadow: 0 0 15px rgba(79,195,247,0.6); }
+  }
+
+  /* Attack animation - Israel flies left */
+  .plane-emoji.fly-il {
+    animation: flyIL 0.8s ease-in-out;
+  }
+
+  @keyframes flyIL {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(0, -25px) rotate(-10deg) scale(1.15); }
+    50%  { transform: translate(-100px, -15px) rotate(-12deg) scale(1.2); }
+    70%  { transform: translate(-100px, -15px) rotate(-12deg) scale(1.2); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  }
+
+  /* Attack animation - Iran flies right */
+  .plane-emoji.fly-ir {
+    animation: flyIR 0.8s ease-in-out;
+  }
+
+  @keyframes flyIR {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(0, -25px) rotate(10deg) scale(1.15); }
+    50%  { transform: translate(100px, -15px) rotate(12deg) scale(1.2); }
+    70%  { transform: translate(100px, -15px) rotate(12deg) scale(1.2); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  }
+
+  /* Hit shake */
+  .plane-card.hit { animation: hitShake 0.5s ease; }
+
+  @keyframes hitShake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-8px) rotate(-2deg); }
+    30% { transform: translateX(8px) rotate(2deg); }
+    45% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+  }
+
+  /* Damage / heal float */
+  .float-text {
+    position: absolute;
+    font-family: 'Secular One', sans-serif;
+    font-size: 1.8em;
+    pointer-events: none;
+    z-index: 50;
+    left: 50%;
+    top: 15%;
+    animation: floatUp 1.5s ease-out forwards;
+    white-space: nowrap;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateX(-50%) translateY(0) scale(0.5); opacity: 0; }
+    15% { transform: translateX(-50%) translateY(-10px) scale(1.3); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(-70px) scale(0.9); opacity: 0; }
+  }
+
+  /* Missile sparks */
+  .spark {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: #ffd700;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10;
+    animation: sparkFade 0.5s ease-out forwards;
+    box-shadow: 0 0 10px #ffd700, 0 0 20px #ff6b35;
+  }
+
+  @keyframes sparkFade {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
+  }
+
+  /* ========== QUESTION AREA ========== */
+  .question-area {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 15px 15px 25px;
+  }
+
+  .battle-status {
+    text-align: center;
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-family: 'Secular One', sans-serif;
+    font-size: 1.1em;
+    transition: all 0.3s;
+  }
+
+  .battle-status.ready {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid #ffd70044;
+    color: #ffd700;
+  }
+
+  .battle-status.correct-status {
+    background: rgba(76,175,80,0.15);
+    border: 1px solid #4caf5066;
+    color: #66bb6a;
+  }
+
+  .battle-status.wrong-status {
+    background: rgba(239,83,80,0.15);
+    border: 1px solid #ef535066;
+    color: #ef5350;
+  }
+
+  .q-card {
+    background: rgba(255,255,255,0.06);
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 15px;
+    transition: all 0.3s;
+  }
+
+  .q-card.q-correct {
+    background: rgba(76,175,80,0.08);
+    border-color: #4caf5066;
+  }
+
+  .q-card.q-wrong {
+    background: rgba(239,83,80,0.08);
+    border-color: #ef535066;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .q-num {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+
+  .q-reward-tag {
+    background: linear-gradient(135deg, #ffd700, #ff6b35);
+    color: #1a1a2e;
+    font-size: 0.72em;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-family: 'Secular One', sans-serif;
+    white-space: nowrap;
+  }
+
+  .q-text {
+    font-size: 1.05em;
+    line-height: 1.7;
+    color: #e0e0e0;
+  }
+
+  .verse-ref { font-size: 0.78em; color: #607d8b; font-style: italic; }
+
+  .q-section-title {
+    font-family: 'Secular One', sans-serif;
+    color: #5c6bc0;
+    font-size: 1em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Options */
+  .options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .option {
+    padding: 12px 14px;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Rubik', sans-serif;
+    font-size: 0.95em;
+    background: rgba(255,255,255,0.04);
+    text-align: center;
+    user-select: none;
+    color: #e0e0e0;
+  }
+
+  .option:hover { border-color: #5c6bc0; background: rgba(92,107,192,0.15); transform: translateY(-1px); }
+  .option.sel-correct { background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; border-color: #4caf50; }
+  .option.sel-wrong { background: linear-gradient(135deg, #e57373, #ef5350); color: white; border-color: #e57373; }
+  .option.disabled { pointer-events: none; opacity: 0.6; }
+
+  /* TF */
+  .tf-options { display: flex; gap: 10px; margin-top: 10px; }
+
+  .tf-btn {
+    padding: 10px 26px;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    background: rgba(255,255,255,0.04);
+    transition: all 0.2s;
+    user-select: none;
+    color: #e0e0e0;
+    font-size: 0.95em;
+  }
+
+  .tf-btn:hover { border-color: #5c6bc0; background: rgba(92,107,192,0.15); }
+
+  /* Fill */
+  .fill-input {
+    border: none;
+    border-bottom: 2px dashed #5c6bc0;
+    background: transparent;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1em;
+    padding: 3px 10px;
+    width: 120px;
+    text-align: center;
+    color: #ffd700;
+    outline: none;
+    margin: 0 4px;
+  }
+
+  .check-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 22px;
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    font-size: 0.9em;
+    transition: all 0.2s;
+  }
+
+  .check-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 12px rgba(26,35,126,0.4); }
+
+  .feedback-msg {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.88em;
+    font-weight: 600;
+    display: none;
+  }
+
+  .feedback-msg.show { display: block; }
+  .feedback-msg.fb-ok { background: rgba(76,175,80,0.15); color: #66bb6a; }
+  .feedback-msg.fb-no { background: rgba(239,83,80,0.15); color: #ef9a9a; }
+
+  /* Match */
+  .match-grid { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .match-col { display: flex; flex-direction: column; gap: 8px; }
+
+  .match-item {
+    padding: 10px 16px;
+    border: 2px solid #5c6bc0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    min-width: 120px;
+    font-size: 0.9em;
+    background: rgba(255,255,255,0.04);
+    user-select: none;
+  }
+
+  .match-item:hover { background: rgba(92,107,192,0.15); }
+  .match-item.selected { background: rgba(255,152,0,0.15); border-color: #ff9800; }
+  .match-item.matched { background: linear-gradient(135deg, #4caf50, #66bb6a); color: white; border-color: #4caf50; pointer-events: none; }
+
+  /* ========== FINAL ========== */
+  .final-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.92);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .final-overlay.show { display: flex; }
+
+  .final-box {
+    text-align: center;
+    padding: 45px 40px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid #ffd700;
+    border-radius: 28px;
+    backdrop-filter: blur(20px);
+    animation: victoryPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 80px rgba(255,215,0,0.15);
+    max-width: 400px;
+    width: 90%;
+  }
+
+  @keyframes victoryPop {
+    from { transform: scale(0.3); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .final-emoji { font-size: 3.5em; margin-bottom: 10px; }
+  .final-title { font-family: 'Secular One', sans-serif; font-size: 2em; color: #ffd700; margin-bottom: 8px; }
+  .final-detail { color: #90a4ae; font-size: 1em; margin-bottom: 20px; line-height: 1.6; }
+
+  .again-btn {
+    padding: 14px 45px;
+    background: linear-gradient(135deg, #ffd700, #ff6b35);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 25px;
+    font-family: 'Secular One', sans-serif;
+    font-size: 1.15em;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .again-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 35px rgba(255,215,0,0.35); }
+
+  /* Confetti */
+  .confetti-box { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; display: none; }
+  .confetti-piece { position: absolute; border-radius: 2px; animation: confettiFall 3s ease-in forwards; }
+  @keyframes confettiFall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+  @media (max-width: 600px) {
+    .options { grid-template-columns: 1fr; }
+    .battlefield { flex-direction: row; gap: 5px; }
+    .plane-card { padding: 12px 8px; }
+    .plane-emoji { font-size: 2.5em; }
+    .match-grid { flex-direction: column; align-items: center; }
+    .vs-area { font-size: 1.3em; min-width: 35px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="confetti-box" id="confettiBox"></div>
+
+<!-- ========== TOP BAR - HOLIDAYS ========== -->
+<div class="top-bar">
+  <div class="top-title">📖 ויקרא כ"ג — ענו נכון ותקפו! ענו לא נכון ואיראן תוקפת!</div>
+  <div class="holiday-strip">
+    <span class="holiday-icon" id="hIcon1" title="שבת">🕯️</span>
+    <span class="holiday-icon" id="hIcon2" title="פסח">🍷</span>
+    <span class="holiday-icon" id="hIcon3" title="ספירת העומר">🌾</span>
+    <span class="holiday-icon" id="hIcon4" title="שבועות">📜</span>
+    <span class="holiday-icon" id="hIcon5" title="ראש השנה">📯</span>
+    <span class="holiday-icon" id="hIcon6" title="יום כיפור">🤍</span>
+    <span class="holiday-icon" id="hIcon7" title="סוכות">🌿</span>
+    <span class="holiday-icon" id="hIcon8" title="שמיני עצרת">🎊</span>
+  </div>
+  <div class="score-line">ניקוד: <span id="scoreNum">0</span> / 8</div>
+</div>
+
+<!-- ========== BATTLEFIELD ========== -->
+<div class="battlefield">
+  <div class="plane-card" id="planeCard1">
+    <div class="plane-flag">🇮🇱 ישראל</div>
+    <div class="plane-emoji" id="planeEmoji1">✈️</div>
+    <div class="plane-name" style="color:#5c9aff">טייס ישראל</div>
+    <div class="hp-row">
+      <span>❤️ חיים</span>
+      <span class="hp-num" id="hpNum1">100</span>
+    </div>
+    <div class="hp-bar">
+      <div class="hp-fill" id="hpFill1" style="width:100%; background:#0038b8"></div>
+    </div>
+    <div class="power-badge">💪 כוח: <span id="pwrNum1">8</span></div>
+  </div>
+
+  <div class="vs-area">⚡<br>VS<br>⚡</div>
+
+  <div class="plane-card" id="planeCard2">
+    <div class="plane-flag">🇮🇷 איראן</div>
+    <div class="plane-emoji" id="planeEmoji2">✈️</div>
+    <div class="plane-name" style="color:#ef5350">טייס איראן</div>
+    <div class="hp-row">
+      <span>❤️ חיים</span>
+      <span class="hp-num" id="hpNum2">100</span>
+    </div>
+    <div class="hp-bar">
+      <div class="hp-fill" id="hpFill2" style="width:100%; background:#da0000"></div>
+    </div>
+    <div class="power-badge">💪 כוח: <span id="pwrNum2">8</span></div>
+  </div>
+</div>
+
+<!-- ========== QUESTIONS ========== -->
+<div class="question-area">
+  <div class="battle-status ready" id="battleStatus">📖 ענו על השאלה — תשובה נכונה = ישראל תוקפת! ✈️💥</div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1">
+    <div class="q-header">
+      <div class="q-num">1</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">בחרו תשובה</div>
+    </div>
+    <div class="q-text">מָה הַחָג הָרִאשׁוֹן שֶׁמּוּזְכָּר בַּפֶּרֶק? <span class="verse-ref">(פסוק ג')</span></div>
+    <div class="options">
+      <div class="option" onclick="answer('q1',this,false)">פֶּסַח</div>
+      <div class="option" onclick="answer('q1',this,true)">שַׁבָּת</div>
+      <div class="option" onclick="answer('q1',this,false)">סוּכּוֹת</div>
+      <div class="option" onclick="answer('q1',this,false)">שָׁבוּעוֹת</div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2">
+    <div class="q-header">
+      <div class="q-num">2</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">בחרו תשובה</div>
+    </div>
+    <div class="q-text">בְּאֵיזֶה חֹדֶשׁ חוֹגְגִים אֶת חַג הַפֶּסַח? <span class="verse-ref">(פסוק ה')</span></div>
+    <div class="options">
+      <div class="option" onclick="answer('q2',this,true)">הַחֹדֶשׁ הָרִאשׁוֹן</div>
+      <div class="option" onclick="answer('q2',this,false)">הַחֹדֶשׁ הַשְּׁבִיעִי</div>
+      <div class="option" onclick="answer('q2',this,false)">הַחֹדֶשׁ הַשְּׁלִישִׁי</div>
+      <div class="option" onclick="answer('q2',this,false)">הַחֹדֶשׁ הַשֵּׁנִי</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" id="q3">
+    <div class="q-header">
+      <div class="q-num">3</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">בחרו תשובה</div>
+    </div>
+    <div class="q-text">כַּמָּה יָמִים סוֹפְרִים מִפֶּסַח עַד שָׁבוּעוֹת? <span class="verse-ref">(פסוק ט"ז)</span></div>
+    <div class="options">
+      <div class="option" onclick="answer('q3',this,false)">שִׁבְעָה</div>
+      <div class="option" onclick="answer('q3',this,false)">שְׁלוֹשִׁים</div>
+      <div class="option" onclick="answer('q3',this,true)">חֲמִשִּׁים</div>
+      <div class="option" onclick="answer('q3',this,false)">אַרְבָּעִים</div>
+    </div>
+  </div>
+
+  <!-- Q4 - TF -->
+  <div class="q-card" id="q4">
+    <div class="q-header">
+      <div class="q-num">4</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">נכון או לא נכון?</div>
+    </div>
+    <div class="q-text">בְּיוֹם הַכִּפּוּרִים צָרִיךְ לָצוּם. <span class="verse-ref">(פסוק כ"ז)</span></div>
+    <div class="tf-options">
+      <div class="tf-btn" onclick="answerTF('q4',this,true)">✅ נכון</div>
+      <div class="tf-btn" onclick="answerTF('q4',this,false)">❌ לא נכון</div>
+    </div>
+    <div class="feedback-msg" id="fb-q4"></div>
+  </div>
+
+  <!-- Q5 - TF -->
+  <div class="q-card" id="q5">
+    <div class="q-header">
+      <div class="q-num">5</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">נכון או לא נכון?</div>
+    </div>
+    <div class="q-text">ראש השנה נקרא בפרק "זִכְרוֹן תְּרוּעָה". <span class="verse-ref">(פסוק כ"ד)</span></div>
+    <div class="tf-options">
+      <div class="tf-btn" onclick="answerTF('q5',this,true)">✅ נכון</div>
+      <div class="tf-btn" onclick="answerTF('q5',this,false)">❌ לא נכון</div>
+    </div>
+    <div class="feedback-msg" id="fb-q5"></div>
+  </div>
+
+  <!-- Q6 - Fill -->
+  <div class="q-card" id="q6">
+    <div class="q-header">
+      <div class="q-num">6</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">השלימו</div>
+    </div>
+    <div class="q-text">"וּלְקַחְתֶּם לָכֶם... וְעַרְבֵי <input class="fill-input" id="fill1" placeholder="______">" <span class="verse-ref">(פסוק מ')</span></div>
+    <button class="check-btn" onclick="answerFill('fill1','q6',['נחל','נָחַל'])">בדקו ←</button>
+    <div class="feedback-msg" id="fb-q6"></div>
+  </div>
+
+  <!-- Q7 - Fill -->
+  <div class="q-card" id="q7">
+    <div class="q-header">
+      <div class="q-num">7</div>
+      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
+      <div class="q-section-title">השלימו</div>
+    </div>
+    <div class="q-text">"בַּ<input class="fill-input" id="fill2" placeholder="______"> תֵּשְׁבוּ שִׁבְעַת יָמִים" <span class="verse-ref">(פסוק מ"ב)</span></div>
+    <button class="check-btn" onclick="answerFill('fill2','q7',['סכת','סוכת','סֻּכֹּת','סוכות'])">בדקו ←</button>
+    <div class="feedback-msg" id="fb-q7"></div>
+  </div>
+
+  <!-- Q8 - Match -->
+  <div class="q-card" id="q8">
+    <div class="q-header">
+      <div class="q-num">8</div>
+      <div class="q-reward-tag">🇮🇱 מכה כפולה!</div>
+      <div class="q-section-title">⭐ התאימו חג לפירוט</div>
+    </div>
+    <p style="color:#607d8b; font-size:0.85em; margin-bottom:10px; text-align:center;">לחצו על חג ואז על ההתאמה שלו</p>
+    <div class="match-grid">
+      <div class="match-col" id="colR">
+        <div class="match-item" data-match="A" onclick="selectM(this,'R')">🍷 פסח</div>
+        <div class="match-item" data-match="B" onclick="selectM(this,'R')">📯 ראש השנה</div>
+        <div class="match-item" data-match="C" onclick="selectM(this,'R')">🌿 סוכות</div>
+        <div class="match-item" data-match="D" onclick="selectM(this,'R')">🤍 יום כיפור</div>
+      </div>
+      <div class="match-col" id="colL">
+        <div class="match-item" data-match="C" onclick="selectM(this,'L')">ארבעת המינים</div>
+        <div class="match-item" data-match="A" onclick="selectM(this,'L')">שבעת ימים מצות</div>
+        <div class="match-item" data-match="D" onclick="selectM(this,'L')">צום</div>
+        <div class="match-item" data-match="B" onclick="selectM(this,'L')">תקיעת שופר</div>
+      </div>
+    </div>
+    <div class="feedback-msg" id="fb-q8" style="text-align:center;margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- ========== FINAL ========== -->
+<div class="final-overlay" id="finalOverlay">
+  <div class="final-box">
+    <div class="final-emoji" id="finalEmoji"></div>
+    <div class="final-title" id="finalTitle"></div>
+    <div class="final-detail" id="finalDetail"></div>
+    <button class="again-btn" onclick="location.reload()">🔄 שחק שוב!</button>
+  </div>
+</div>
+
+<script>
+  // ========== GAME STATE ==========
+  let score = 0;
+  const total = 8;
+  let answered = new Set();
+
+  const ilPower = 8;
+  const irPower = 8;
+  let ilHp = 100;
+  let irHp = 100;
+  const maxHp = 100;
+
+  // ========== CORE: ANSWER ==========
+  function onCorrect(qId) {
+    if (answered.has(qId)) return;
+    answered.add(qId);
+    score++;
+    document.getElementById('scoreNum').textContent = score;
+
+    // Light up holiday
+    const icon = document.getElementById('hIcon' + score);
+    if (icon) icon.classList.add('active');
+
+    // Israel attacks Iran!
+    const dice = Math.floor(Math.random() * 6) + 1;
+    let dmg = ilPower + dice + score * 2; // stronger as you get more right
+    if (qId === 'q8') dmg = Math.floor(dmg * 1.5); // bonus for matching
+    irHp = Math.max(0, irHp - dmg);
+
+    // Status
+    const st = document.getElementById('battleStatus');
+    st.textContent = `✅ נכון! ישראל תוקפת! 💥 -${dmg} לאיראן!`;
+    st.className = 'battle-status correct-status';
+
+    // Animate Israel attacks
+    const ilPlane = document.getElementById('planeEmoji1');
+    ilPlane.classList.remove('fly-il');
+    void ilPlane.offsetWidth;
+    ilPlane.classList.add('fly-il');
+    setTimeout(() => ilPlane.classList.remove('fly-il'), 850);
+
+    setTimeout(() => {
+      const card = document.getElementById('planeCard2');
+      card.classList.add('hit');
+      setTimeout(() => card.classList.remove('hit'), 600);
+      showFloat('planeCard2', `-${dmg}`, '#ff5252');
+      spawnSparks('planeCard2');
+    }, 400);
+
+    updateHP();
+    // battlefield is sticky - always visible
+
+    setTimeout(() => checkEnd(), 1200);
+  }
+
+  function onWrong(qId) {
+    if (answered.has(qId)) return;
+    answered.add(qId);
+
+    // Iran attacks Israel!
+    const dice = Math.floor(Math.random() * 6) + 1;
+    const dmg = irPower + dice;
+    ilHp = Math.max(0, ilHp - dmg);
+
+    // Status
+    const st = document.getElementById('battleStatus');
+    st.textContent = `❌ לא נכון! איראן תוקפת! 💥 -${dmg} לישראל!`;
+    st.className = 'battle-status wrong-status';
+
+    // Animate Iran attacks
+    const irPlane = document.getElementById('planeEmoji2');
+    irPlane.classList.remove('fly-ir');
+    void irPlane.offsetWidth;
+    irPlane.classList.add('fly-ir');
+    setTimeout(() => irPlane.classList.remove('fly-ir'), 850);
+
+    setTimeout(() => {
+      const card = document.getElementById('planeCard1');
+      card.classList.add('hit');
+      setTimeout(() => card.classList.remove('hit'), 600);
+      showFloat('planeCard1', `-${dmg}`, '#ff5252');
+      spawnSparks('planeCard1');
+    }, 400);
+
+    updateHP();
+    // battlefield is sticky - always visible
+
+    setTimeout(() => checkEnd(), 1200);
+  }
+
+  // ========== QUESTION HANDLERS ==========
+  function answer(qId, el, correct) {
+    if (answered.has(qId)) return;
+    const q = document.getElementById(qId);
+    q.querySelectorAll('.option').forEach(o => o.classList.add('disabled'));
+
+    if (correct) {
+      el.classList.add('sel-correct');
+      q.classList.add('q-correct');
+      onCorrect(qId);
+    } else {
+      el.classList.add('sel-wrong');
+      q.classList.add('q-wrong');
+      q.querySelectorAll('.option').forEach(o => {
+        if (o.onclick.toString().includes('true')) o.classList.add('sel-correct');
+      });
+      onWrong(qId);
+    }
+  }
+
+  function answerTF(qId, el, correct) {
+    if (answered.has(qId)) return;
+    const q = document.getElementById(qId);
+    const fb = document.getElementById('fb-' + qId);
+    q.querySelectorAll('.tf-btn').forEach(b => b.style.pointerEvents = 'none');
+
+    if (correct) {
+      el.style.background = 'linear-gradient(135deg, #4caf50, #66bb6a)';
+      el.style.color = 'white';
+      q.classList.add('q-correct');
+      fb.textContent = qId === 'q4' ? 'נכון! ביום כיפור צמים!' : 'נכון! זיכרון תרועה!';
+      fb.className = 'feedback-msg show fb-ok';
+      onCorrect(qId);
+    } else {
+      el.style.background = 'linear-gradient(135deg, #e57373, #ef5350)';
+      el.style.color = 'white';
+      q.classList.add('q-wrong');
+      fb.textContent = 'לא נכון...';
+      fb.className = 'feedback-msg show fb-no';
+      onWrong(qId);
+    }
+  }
+
+  function answerFill(inputId, qId, answers) {
+    if (answered.has(qId)) return;
+    const input = document.getElementById(inputId);
+    const val = input.value.trim().replace(/[\u0591-\u05C7]/g, '');
+    const fb = document.getElementById('fb-' + qId);
+    const q = document.getElementById(qId);
+    const norm = answers.map(a => a.replace(/[\u0591-\u05C7]/g, ''));
+
+    if (norm.includes(val)) {
+      q.classList.add('q-correct');
+      fb.textContent = 'מצוין! ⭐';
+      fb.className = 'feedback-msg show fb-ok';
+      input.style.borderColor = '#4caf50';
+      input.style.color = '#66bb6a';
+      onCorrect(qId);
+    } else if (val === '') {
+      fb.textContent = 'כתבו תשובה...';
+      fb.className = 'feedback-msg show fb-no';
+    } else {
+      q.classList.add('q-wrong');
+      fb.textContent = 'לא נכון...';
+      fb.className = 'feedback-msg show fb-no';
+      onWrong(qId);
+    }
+  }
+
+  // Matching
+  let selR = null, selL = null, matchCount = 0;
+
+  function selectM(el, side) {
+    if (el.classList.contains('matched')) return;
+    if (side === 'R') {
+      if (selR) selR.classList.remove('selected');
+      selR = el; el.classList.add('selected');
+    } else {
+      if (selL) selL.classList.remove('selected');
+      selL = el; el.classList.add('selected');
+    }
+    if (selR && selL) {
+      if (selR.dataset.match === selL.dataset.match) {
+        selR.classList.remove('selected'); selL.classList.remove('selected');
+        selR.classList.add('matched'); selL.classList.add('matched');
+        matchCount++;
+        if (matchCount === 4) {
+          const fb = document.getElementById('fb-q8');
+          fb.textContent = 'כל הכבוד! ⭐';
+          fb.className = 'feedback-msg show fb-ok';
+          onCorrect('q8');
+        }
+      } else {
+        const tmpR = selR, tmpL = selL;
+        tmpR.classList.remove('selected'); tmpL.classList.remove('selected');
+        tmpR.style.animation = 'shake 0.4s'; tmpL.style.animation = 'shake 0.4s';
+        setTimeout(() => { tmpR.style.animation = ''; tmpL.style.animation = ''; }, 500);
+      }
+      selR = null; selL = null;
+    }
+  }
+
+  // ========== EFFECTS ==========
+  function showFloat(cardId, text, color) {
+    const card = document.getElementById(cardId);
+    const f = document.createElement('div');
+    f.className = 'float-text';
+    f.textContent = text;
+    f.style.color = color;
+    f.style.textShadow = `0 2px 10px ${color}88`;
+    card.appendChild(f);
+    setTimeout(() => f.remove(), 1600);
+  }
+
+  function spawnSparks(cardId) {
+    const card = document.getElementById(cardId);
+    for (let i = 0; i < 6; i++) {
+      const s = document.createElement('div');
+      s.className = 'spark';
+      s.style.left = (25 + Math.random() * 50) + '%';
+      s.style.top = (15 + Math.random() * 40) + '%';
+      s.style.animationDelay = (i * 0.06) + 's';
+      card.appendChild(s);
+      setTimeout(() => s.remove(), 600);
+    }
+  }
+
+  function updateHP() {
+    document.getElementById('hpNum1').textContent = ilHp;
+    document.getElementById('hpNum2').textContent = irHp;
+
+    const fill1 = document.getElementById('hpFill1');
+    const fill2 = document.getElementById('hpFill2');
+    fill1.style.width = (ilHp / maxHp * 100) + '%';
+    fill2.style.width = (irHp / maxHp * 100) + '%';
+
+    if (ilHp <= 25) fill1.classList.add('low'); else fill1.classList.remove('low');
+    if (irHp <= 25) fill2.classList.add('low'); else fill2.classList.remove('low');
+
+    document.getElementById('pwrNum1').textContent = ilPower + score * 2;
+  }
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ========== END GAME ==========
+  function checkEnd() {
+    if (irHp <= 0) {
+      showFinal(true);
+    } else if (ilHp <= 0) {
+      showFinal(false);
+    } else if (answered.size >= total) {
+      // All answered - who has more HP?
+      showFinal(ilHp >= irHp);
+    } else {
+      // Reset status for next question
+      const st = document.getElementById('battleStatus');
+      st.textContent = '📖 ענו על השאלה הבאה!';
+      st.className = 'battle-status ready';
+    }
+  }
+
+  function showFinal(israelWon) {
+    const ov = document.getElementById('finalOverlay');
+    ov.classList.add('show');
+
+    if (israelWon) {
+      document.getElementById('finalEmoji').textContent = '🏆 🇮🇱 ✈️ 🏆';
+      document.getElementById('finalTitle').textContent = 'ישראל ניצחה!';
+      document.getElementById('finalDetail').innerHTML =
+        `ענית נכון על ${score} מתוך ${total} שאלות!<br>` +
+        `🇮🇱 ישראל: ${ilHp} ❤️ | 🇮🇷 איראן: ${irHp} ❤️`;
+      launchConfetti();
+    } else {
+      document.getElementById('finalEmoji').textContent = '😔 ✈️';
+      document.getElementById('finalTitle').textContent = 'איראן ניצחה...';
+      document.getElementById('finalDetail').innerHTML =
+        `ענית נכון על ${score} מתוך ${total} שאלות.<br>` +
+        `🇮🇱 ישראל: ${ilHp} ❤️ | 🇮🇷 איראן: ${irHp} ❤️<br>` +
+        `נסו שוב ותענו יותר נכון!`;
+    }
+  }
+
+  function launchConfetti() {
+    const c = document.getElementById('confettiBox');
+    c.style.display = 'block';
+    const cols = ['#0038b8','#ffd700','#4caf50','#ff9800','#e91e63','#5c6bc0','#fff'];
+    for (let i = 0; i < 80; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.background = cols[Math.floor(Math.random() * cols.length)];
+      p.style.animationDelay = Math.random() * 2 + 's';
+      p.style.animationDuration = (2 + Math.random() * 2) + 's';
+      p.style.width = (5 + Math.random() * 8) + 'px';
+      p.style.height = (5 + Math.random() * 8) + 'px';
+      c.appendChild(p);
+    }
+    setTimeout(() => { c.style.display = 'none'; c.innerHTML = ''; }, 5000);
+  }
+</script>
+
+</body>
+</html>
