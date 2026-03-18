@@ -590,9 +590,8 @@
     <span class="holiday-icon" id="hIcon5" title="מרור">🥬</span>
     <span class="holiday-icon" id="hIcon6" title="קריעת ים סוף">🌊</span>
     <span class="holiday-icon" id="hIcon7" title="הגדה">📖</span>
-    <span class="holiday-icon" id="hIcon8" title="חירות">🕊️</span>
   </div>
-  <div class="score-line">ניקוד: <span id="scoreNum">0</span> / 8</div>
+  <div class="score-line">ניקוד: <span id="scoreNum">0</span> / 7</div>
 </div>
 
 <!-- ========== BATTLEFIELD ========== -->
@@ -619,10 +618,10 @@
     <div class="plane-name" style="color:#ef5350">טייס איראן</div>
     <div class="hp-row">
       <span>❤️ חיים</span>
-      <span class="hp-num" id="hpNum2">100</span>
+      <span class="hp-num" id="hpNum2">60</span>
     </div>
     <div class="hp-bar">
-      <div class="hp-fill" id="hpFill2" style="width:100%; background:#da0000"></div>
+      <div class="hp-fill" id="hpFill2" style="width:100%; background:#da0000" data-max="60"></div>
     </div>
     <div class="power-badge">💪 כוח: <span id="pwrNum2">8</span></div>
   </div>
@@ -695,20 +694,6 @@
     <div class="feedback-msg" id="fb-q4"></div>
   </div>
 
-  <!-- Q5 - TF -->
-  <div class="q-card" id="q5">
-    <div class="q-header">
-      <div class="q-num">5</div>
-      <div class="q-reward-tag">🇮🇱 +נזק לאיראן</div>
-      <div class="q-section-title">נכון או לא נכון?</div>
-    </div>
-    <div class="q-text">בְּנֵי יִשְׂרָאֵל שָׁהוּ בְּמִצְרַיִם אַרְבַּע מֵאוֹת וּשְׁלוֹשִׁים שָׁנָה. <span class="verse-ref">(שמות י"ב, מ')</span></div>
-    <div class="tf-options">
-      <div class="tf-btn" onclick="answerTF('q5',this,true)">✅ נכון</div>
-      <div class="tf-btn" onclick="answerTF('q5',this,false)">❌ לא נכון</div>
-    </div>
-    <div class="feedback-msg" id="fb-q5"></div>
-  </div>
 
   <!-- Q6 - Fill -->
   <div class="q-card" id="q6">
@@ -773,14 +758,14 @@
 <script>
   // ========== GAME STATE ==========
   let score = 0;
-  const total = 8;
+  const total = 7;
   let answered = new Set();
 
   const ilPower = 8;
   const irPower = 8;
   let ilHp = 100;
-  let irHp = 100;
-  const maxHp = 100;
+  let irHp = 60;
+  const maxHp = 100; const irMaxHp = 60;
 
   // ========== CORE: ANSWER ==========
   function onCorrect(qId) {
@@ -890,7 +875,7 @@
       el.style.background = 'linear-gradient(135deg, #4caf50, #66bb6a)';
       el.style.color = 'white';
       q.classList.add('q-correct');
-      fb.textContent = qId === 'q4' ? 'נכון! "מִן הַכְּבָשִׂים וּמִן הָעִזִּים תִּקָּחוּ" (שמות י"ב, ה\')' : 'נכון! "וּמוֹשַׁב בְּנֵי יִשְׂרָאֵל... שְׁלֹשִׁים שָׁנָה וְאַרְבַּע מֵאוֹת שָׁנָה"';
+      fb.textContent = 'נכון! "מִן הַכְּבשִׂים וּמִן הָעִזִּים תִּקָּחוּ" (שמות י"ב, ה')';
       fb.className = 'feedback-msg show fb-ok';
       onCorrect(qId);
     } else {
@@ -994,7 +979,7 @@
     const fill1 = document.getElementById('hpFill1');
     const fill2 = document.getElementById('hpFill2');
     fill1.style.width = (ilHp / maxHp * 100) + '%';
-    fill2.style.width = (irHp / maxHp * 100) + '%';
+    fill2.style.width = (irHp / 60 * 100) + '%';
 
     if (ilHp <= 25) fill1.classList.add('low'); else fill1.classList.remove('low');
     if (irHp <= 25) fill2.classList.add('low'); else fill2.classList.remove('low');
